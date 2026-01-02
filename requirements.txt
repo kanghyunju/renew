@@ -1,0 +1,10 @@
+dash
+flask
+gunicorn
+pytz
+Pillow
+gspread
+google-auth
+kiwipiepy
+pandas
+
