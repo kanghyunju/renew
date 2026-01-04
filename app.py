@@ -31,6 +31,46 @@ server = app.server
 # Flask 세션 시크릿 키 설정
 server.secret_key = os.environ.get('SECRET_KEY', 'kH9mP2nQ5rT8vW1yE4xB7cF0jG3sL6aD9uN2zK5hM8pR1tY4wX7vC0fJ3gL6sN9q')
 
+# ===== 헬스체크 엔드포인트 =====
+
+@server.route('/health')
+def health_check():
+    """Railway 헬스체크 전용 - 즉시 응답"""
+    return jsonify({
+        'status': 'ok',
+        'service': 'tentlog',
+        'version': '1.0.0'
+    }), 200
+
+@server.route('/readiness')
+def readiness_check():
+    """앱 준비 상태 확인 - Google Sheets 연결 포함"""
+    try:
+        from data.data import data_manager
+        
+        # Google Sheets 연결 상태 확인
+        sheets_ready = False
+        try:
+            if data_manager._sheets_manager:
+                sheets_ready = data_manager.sheets_manager.is_connected
+        except:
+            sheets_ready = False
+        
+        status_code = 200 if sheets_ready else 503
+        
+        return jsonify({
+            'status': 'ready' if sheets_ready else 'initializing',
+            'sheets_connected': sheets_ready,
+            'service': 'tentlog'
+        }), status_code
+        
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'error': str(e),
+            'service': 'tentlog'
+        }), 503
+
 # ===== 위스키 테마 닉네임 생성기 =====
 def generate_random_nickname():
     """위스키/바 관련 랜덤 닉네임 생성"""
