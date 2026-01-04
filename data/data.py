@@ -92,6 +92,16 @@ memory_store = {
     'chungmuro_products': []
 }
 
+# Google Sheets Manager (Lazy Loading)
+_sheets_manager_instance = None
+
+def get_sheets_manager():
+    """Google Sheets Manager 싱글톤 (Lazy Loading)"""
+    global _sheets_manager_instance
+    if _sheets_manager_instance is None:
+        _sheets_manager_instance = GoogleSheetsManager()
+    return _sheets_manager_instance
+
 # === 유틸리티 클래스 ===
 class Logger:
     """로깅 유틸리티"""
@@ -517,7 +527,15 @@ class GoogleSheetsManager:
 # === 위스키 데이터 관리 ===
 class WhiskeyDataManager:
     def __init__(self):
-        self.sheets_manager = GoogleSheetsManager()
+        # Google Sheets는 필요할 때만 연결 (Lazy Loading)
+        self._sheets_manager = None
+    
+    @property
+    def sheets_manager(self):
+        """Lazy Loading으로 Google Sheets Manager 반환"""
+        if self._sheets_manager is None:
+            self._sheets_manager = get_sheets_manager()
+        return self._sheets_manager
 
     def get_hannam_products(self) -> List[str]:
         """한남 제품명 목록 (캐싱)"""
