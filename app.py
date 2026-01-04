@@ -372,7 +372,18 @@ def warmup_app():
         return False
 
 # Railway 환경에서만 워밍업 실행
-if os.environ.get('RAILWAY_ENVIRONMENT') or os.environ.get('RAILWAY_PROJECT_ID'):
+# Railway는 여러 환경 변수를 자동으로 설정함
+is_railway = (
+    os.environ.get('RAILWAY_ENVIRONMENT') or 
+    os.environ.get('RAILWAY_PROJECT_ID') or
+    os.environ.get('RAILWAY_SERVICE_ID') or
+    os.environ.get('RAILWAY_DEPLOYMENT_ID') or
+    # Heroku가 아니면서 production 환경이면 Railway로 간주
+    (not os.environ.get('DYNO') and os.environ.get('GOOGLE_CREDENTIALS'))
+)
+
+if is_railway:
+    print("[RAILWAY] Railway 환경 감지")
     warmup_app()
 else:
     # 로컬 개발 환경
