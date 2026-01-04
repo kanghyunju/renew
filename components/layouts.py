@@ -1,4 +1,4 @@
-# components/layouts.py - TENT 위스키 기록장 레이아웃 (TCC 구조)
+# components/layouts.py - tentlog 위스키 기록장 레이아웃 (TCC 구조)
 from dash import html, dcc
 from flask import session
 from typing import Dict, List, Optional
@@ -72,7 +72,7 @@ def _get_navbar(current_path="/"):
         html.Div([
             dcc.Link([
                 html.Span(className="logo-icon"),
-                html.Span("TENT", className="logo-text")
+                html.Span("tentlog", className="logo-text")
             ], href="/", className="nav-brand", style={"display": "flex", "alignItems": "center", "gap": "12px", "textDecoration": "none"}),
             html.Div([
                 right_content
@@ -124,7 +124,7 @@ def get_home_layout(trend_analysis=None, record_count=0):
             html.Div([
                 # 위스키 잔 로고
                 html.Div(className="logo-icon", style={"width": "60px", "height": "75px", "margin": "0 auto 32px"}),
-                html.H1("TENT", style={"fontSize": "48px", "marginBottom": "16px", "fontFamily": "Syne, sans-serif", "fontWeight": "700"}),
+                html.H1("tentlog", style={"fontSize": "48px", "marginBottom": "16px", "fontFamily": "Syne, sans-serif", "fontWeight": "700"}),
                 html.P("위스키 취향 기록장", style={"color": "var(--text-gray)", "fontSize": "18px", "marginBottom": "48px"}),
                 html.Button(
                     "카카오 로그인",
