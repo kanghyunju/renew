@@ -338,3 +338,44 @@ app.index_string = """
     </body>
 </html>
 """
+
+# ===== Railway 워밍업 (앱 시작 시 초기화) =====
+def warmup_app():
+    """Railway 배포 시 앱을 미리 준비"""
+    print("[WARMUP] 시작...")
+    
+    try:
+        # 1. Dash 레이아웃 설정
+        app.layout = get_main_layout()
+        print("[WARMUP] Dash 레이아웃 설정 완료")
+        
+        # 2. 콜백 등록
+        register_callbacks(app)
+        print("[WARMUP] Dash 콜백 등록 완료")
+        
+        # 3. Google Sheets 미리 연결 (선택적)
+        try:
+            from data.data import get_sheets_manager
+            sheets_manager = get_sheets_manager()
+            is_connected = sheets_manager.is_connected
+            print(f"[WARMUP] Google Sheets 연결: {'성공' if is_connected else '실패 (첫 요청 시 재시도)'}")
+        except Exception as e:
+            print(f"[WARMUP] Google Sheets 연결 건너뜀: {e}")
+        
+        print("[WARMUP] 완료 - 앱 준비됨 ✅")
+        return True
+        
+    except Exception as e:
+        print(f"[WARMUP] 실패: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+
+# Railway 환경에서만 워밍업 실행
+if os.environ.get('RAILWAY_ENVIRONMENT') or os.environ.get('RAILWAY_PROJECT_ID'):
+    warmup_app()
+else:
+    # 로컬 개발 환경
+    app.layout = get_main_layout()
+    register_callbacks(app)
+    print("[LOCAL] 로컬 개발 모드")
